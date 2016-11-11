@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <cassert>
-
+#include <algorithm>
 
 
 class Matrix{
@@ -12,7 +12,8 @@ public:
 	Matrix(int sizeY, int sizeX, double* data);
 	Matrix(int sizeY, int sizeX, double init);
 	Matrix(const Matrix & orig);
-	~Matrix(){delete[] data_;std::cout << "Destruktor" << std::endl;}
+	~Matrix(){delete[] data_;//std::cout << "Destruktor" << std::endl;
+	}
 
 	int getX() const {return sizeX_;}
 	int getY() const {return sizeY_;}
@@ -34,7 +35,6 @@ private:
 	int sizeX_;
 	int sizeY_;
 	double * data_;
-	void allocate(int sizeY, int sizeX);
 	
 };
 

@@ -16,12 +16,12 @@
 
 # add this line to prevent CMake warning: it specifies the minimum cmake version which is required 
 # to build this project
-cmake_minimum_required(VERSION 3.1)  
+#cmake_minimum_required(VERSION 3.1)  
 
 # enable c++11 support
 set (CMAKE_CXX_STANDARD 11)
 
-set(CMAKE_CXX_FLAGS "-Wall -pedantic")
+set(CMAKE_CXX_FLAGS "-g -Wall -pedantic -std=c++11 -lstdc++")
 
 # add a single executable called "vector" consisting of a single source file vector.cpp
 add_executable(matrix MatrixTest.cpp MatrixProduct.cpp)

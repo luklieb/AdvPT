@@ -2,9 +2,6 @@
 
 
 
-void Matrix::allocate(int sizeY, int sizeX){
-	data_ = new double [sizeX * sizeY];
-}
 
 Matrix::Matrix()
 	: sizeX_(0),
@@ -12,17 +9,17 @@ Matrix::Matrix()
 	data_(nullptr)
 	
 {
-	std::cout << "Construktor stand" << std::endl;
+	//std::cout << "Construktor stand" << std::endl;
 }
 
 Matrix::Matrix(int sizeY, int sizeX)
 	: sizeX_(sizeX),
-	sizeY_(sizeY)
+	sizeY_(sizeY),
+	data_(new double[sizeX*sizeY])
 {
 	assert( sizeX >= 0 );
 	assert( sizeY >= 0 );
-	allocate(sizeY, sizeX);
-	std::cout << "Constructor Y,X" << std::endl;
+	//std::cout << "Constructor Y,X" << std::endl;
 }
 
 Matrix::Matrix(int sizeY, int sizeX, double* data)
@@ -30,7 +27,7 @@ Matrix::Matrix(int sizeY, int sizeX, double* data)
 	sizeY_(sizeY), 
 	data_(data)
 {
-	std::cout << "Constructor Y,X,*" << std::endl;
+	//std::cout << "Constructor Y,X,*" << std::endl;
 }
 
 Matrix::Matrix(int sizeY, int sizeX, double init)
@@ -39,18 +36,18 @@ Matrix::Matrix(int sizeY, int sizeX, double init)
 {	
 	assert( sizeX >= 0 );
 	assert( sizeY >= 0 );
-	allocate(sizeY, sizeX);
+	data_ = new double[sizeX*sizeY];
 	std::fill(data_, data_+(sizeX_*sizeY_), init);
-	std::cout << "Constructor Y,X,init" << std::endl;
+	//std::cout << "Constructor Y,X,init" << std::endl;
 }
 
 Matrix::Matrix(const Matrix & orig)
 	: sizeX_(orig.sizeX_),
 	sizeY_(orig.sizeY_)
 {
-	allocate(sizeY_, sizeX_);
+	data_ = new double[orig.sizeY_*orig.sizeX_];
 	std::copy(orig.data_, orig.data_+(sizeX_*sizeY_), data_);
-	std::cout << "Constructor Matrix" << std::endl;
+	//std::cout << "Constructor Matrix" << std::endl;
 }
 
 Matrix Matrix::operator+ (const Matrix & o){
@@ -72,8 +69,8 @@ Matrix Matrix::operator- (const Matrix & o){
 Matrix Matrix::operator* (const Matrix & o){
 	assert( sizeX_ == o.sizeY_);
 	Matrix result (sizeY_, o.sizeX_);
-	for(int y = 0; y < result.getY(); ++y){
-		for(int x = 0; x < result.getX(); ++x){
+	for(int y = 0; y < sizeY_; ++y){
+		for(int x = 0; x < o.sizeX_; ++x){
 			for(int inner = 0; inner < sizeX_; ++inner){
 				result(y,x) += (*this)(y, inner) * o(inner, x);
 			}
@@ -96,9 +93,9 @@ double  Matrix::operator() (int y, int x) const {
 }
 
 Matrix & Matrix::operator= (const Matrix & rhs){
-	std::cout << "before rhs: " << std::endl << rhs << std::endl;
+	//std::cout << "before rhs: " << std::endl << rhs << std::endl;
 	Matrix tmp (rhs);
-	std::cout << "after tmp: " << std::endl << tmp << std::endl;
+	//std::cout << "after tmp: " << std::endl << tmp << std::endl;
 	std::swap(sizeX_, tmp.sizeX_);
 	std::swap(sizeY_, tmp.sizeY_);
 	std::swap(data_, tmp.data_);
