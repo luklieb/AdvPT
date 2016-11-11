@@ -6,6 +6,15 @@ void Matrix::allocate(int sizeY, int sizeX){
 	data_ = new double [sizeX * sizeY];
 }
 
+Matrix::Matrix()
+	: sizeX_(0),
+	sizeY_(0),
+	data_(nullptr)
+	
+{
+	std::cout << "Construktor stand" << std::endl;
+}
+
 Matrix::Matrix(int sizeY, int sizeX)
 	: sizeX_(sizeX),
 	sizeY_(sizeY)
@@ -13,13 +22,16 @@ Matrix::Matrix(int sizeY, int sizeX)
 	assert( sizeX >= 0 );
 	assert( sizeY >= 0 );
 	allocate(sizeY, sizeX);
+	std::cout << "Constructor Y,X" << std::endl;
 }
 
 Matrix::Matrix(int sizeY, int sizeX, double* data)
 	: sizeX_(sizeX), 
 	sizeY_(sizeY), 
 	data_(data)
-	{}
+{
+	std::cout << "Constructor Y,X,*" << std::endl;
+}
 
 Matrix::Matrix(int sizeY, int sizeX, double init)
 	: sizeX_(sizeX), 
@@ -29,6 +41,7 @@ Matrix::Matrix(int sizeY, int sizeX, double init)
 	assert( sizeY >= 0 );
 	allocate(sizeY, sizeX);
 	std::fill(data_, data_+(sizeX_*sizeY_), init);
+	std::cout << "Constructor Y,X,init" << std::endl;
 }
 
 Matrix::Matrix(const Matrix & orig)
@@ -37,6 +50,7 @@ Matrix::Matrix(const Matrix & orig)
 {
 	allocate(sizeY_, sizeX_);
 	std::copy(orig.data_, orig.data_+(sizeX_*sizeY_), data_);
+	std::cout << "Constructor Matrix" << std::endl;
 }
 
 Matrix Matrix::operator+ (const Matrix & o){
@@ -57,10 +71,9 @@ Matrix Matrix::operator- (const Matrix & o){
 
 Matrix Matrix::operator* (const Matrix & o){
 	assert( sizeX_ == o.sizeY_);
-	assert( sizeY_ == o.sizeX_);
-	Matrix result (o.sizeX_, sizeY_);
-	for(int x = 0; x < result.getX(); ++x){
-		for(int y = 0; y < result.getY(); ++y){
+	Matrix result (sizeY_, o.sizeX_);
+	for(int y = 0; y < result.getY(); ++y){
+		for(int x = 0; x < result.getX(); ++x){
 			for(int inner = 0; inner < sizeX_; ++inner){
 				result(y,x) += (*this)(y, inner) * o(inner, x);
 			}
@@ -83,7 +96,9 @@ double  Matrix::operator() (int y, int x) const {
 }
 
 Matrix & Matrix::operator= (const Matrix & rhs){
+	std::cout << "before rhs: " << std::endl << rhs << std::endl;
 	Matrix tmp (rhs);
+	std::cout << "after tmp: " << std::endl << tmp << std::endl;
 	std::swap(sizeX_, tmp.sizeX_);
 	std::swap(sizeY_, tmp.sizeY_);
 	std::swap(data_, tmp.data_);

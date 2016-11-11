@@ -12,7 +12,7 @@ public:
 	Matrix(int sizeY, int sizeX, double* data);
 	Matrix(int sizeY, int sizeX, double init);
 	Matrix(const Matrix & orig);
-	~Matrix(){delete[] data_;};	
+	~Matrix(){delete[] data_;std::cout << "Destruktor" << std::endl;}
 
 	int getX() const {return sizeX_;}
 	int getY() const {return sizeY_;}
