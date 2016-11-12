@@ -40,8 +40,8 @@ void testArithmeticOperators()
 
    // Create a 2x2 matrix, where all elements are initialized with zero
    Matrix m1( 2,2,0.0 );
-   Matrix m2( 2,2,0.0 );
-    
+   Matrix m2( 2,3,0.0 );
+   Matrix m3(3,4,2.0);    
 
    m1(0,0) = 1.0;
    m1(0,1) = 2.0;
@@ -53,9 +53,12 @@ void testArithmeticOperators()
    m2(1,0) = 2.0;
    m2(1,1) = 3.0;
     
+   m3(0,3) = 3.0;
+
 
    Matrix sum  ( m1+m2 );
    Matrix prod ( m1*m2 );
+   Matrix prod2(m2*m3);
     assert( std::abs(sum(0,0) - 5.0) < 1e-13 );
     assert( std::abs(sum(0,1) - 7.0) < 1e-13 );
     assert( std::abs(sum(1,0) - 5.0) < 1e-13 );
@@ -66,6 +69,8 @@ void testArithmeticOperators()
     assert( std::abs(prod(1,0) - 14.0) < 1e-13 );
     assert( std::abs(prod(1,1) - 18.0) < 1e-13 );
 
+	
+	cout << prod2 << endl;
 
    m1 += m2;
    assert( std::abs(m1(0,0) - sum(0,0)) < 1e-13 );

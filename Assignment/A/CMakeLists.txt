@@ -21,10 +21,10 @@
 # enable c++11 support
 set (CMAKE_CXX_STANDARD 11)
 
-set(CMAKE_CXX_FLAGS "-g -Wall -pedantic -std=c++11 -lstdc++")
+set(CMAKE_CXX_FLAGS "-g -Wall -pedantic -std=c++11")
 
 # add a single executable called "vector" consisting of a single source file vector.cpp
-add_executable(matrix MatrixTest.cpp MatrixProduct.cpp)
+add_executable(matrix MatrixTest.cpp)
 
 
 
