@@ -60,8 +60,8 @@ Matrix::Matrix(int sizeY, int sizeX)
 	sizeY_(sizeY),
 	data_(new double[sizeX*sizeY]())
 {
-	assert( sizeX >= 0 );
-	assert( sizeY >= 0 );
+	assert( sizeX > 0 );
+	assert( sizeY > 0 );
 	//std::cout << "Constructor Y,X" << std::endl;
 }
 
@@ -70,6 +70,8 @@ Matrix::Matrix(int sizeY, int sizeX, double* data)
 	sizeY_(sizeY), 
 	data_(data)
 {
+	assert( sizeX > 0);
+	assert (sizeY > 0);
 	//std::cout << "Constructor Y,X,*" << std::endl;
 }
 
@@ -77,8 +79,8 @@ Matrix::Matrix(int sizeY, int sizeX, double init)
 	: sizeX_(sizeX), 
 	sizeY_(sizeY)
 {	
-	assert( sizeX >= 0 );
-	assert( sizeY >= 0 );
+	assert( sizeX > 0 );
+	assert( sizeY > 0 );
 	data_ = new double[sizeX*sizeY];
 	std::fill(data_, data_+(sizeX_*sizeY_), init);
 	//std::cout << "Constructor Y,X,init" << std::endl;
@@ -159,7 +161,6 @@ Matrix & Matrix::operator-= (const Matrix & rhs){
 
 Matrix & Matrix::operator*= (const Matrix & rhs){
 	assert( sizeX_ == rhs.sizeY_);
-	assert( sizeY_ == rhs.sizeX_);
 	//Matrix result (o.sizeX_, sizeY_);
 	return (*this) = (*this) * rhs;
 }
