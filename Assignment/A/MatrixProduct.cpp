@@ -2,7 +2,9 @@
 #include <iostream>
 
 
-double validInput();
+void validInput(int & var);
+void validInput(double & var);
+//int validInputInt();
 
 using std::cout;
 using std::endl;
@@ -15,7 +17,10 @@ int main (int argv, const char** args){
 	int s3 = 0;
 
 	cout << "Enter sizes s1, s2, s3: " << endl;
-	cin >> s1 >> s2 >> s3;
+	//cin >> s1 >> s2 >> s3;
+	validInput(s1);
+	validInput(s2);
+	validInput(s3);
 	cout << "s1: " << s1 << ", s2: " << s2 << ", s3: " << s3 << endl;
 	if( (s1 <= 0) || (s2 <= 0) || (s3<= 0) ){
 		std::cerr << "Wrong sizes... abort programm" << endl;
@@ -28,14 +33,14 @@ int main (int argv, const char** args){
 	cout << "m1 row by row, " << s1 << "x" << s2 << endl;
 	for(int y = 0; y<s1; ++y){
 		for(int x = 0; x<s2; ++x){
-			m1(y,x) = validInput();
+			validInput(m1(y,x));
 		}
 	}
 	cout << "m1: "<< endl << m1 << endl;
 	cout << "m2 row by row, " << s2 << "x" << s3 << endl;
 	for(int y = 0; y<s2; ++y){
 		for(int x = 0; x<s3; ++x){
-			m2(y,x) = validInput();
+			validInput(m2(y,x));
 		}
 	}
 
@@ -54,10 +59,38 @@ int main (int argv, const char** args){
 
 
 
-double validInput(){
-	double n;
+void validInput(double &  var){
+	std::remove_reference<decltype(var)>::type n;
 	std::cin >> n;
-	if(std::cin.fail()){
+	while(std::cin.fail()){
+		// not a number
+		std::cin.clear(); // reset failbit
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //skip input too big
+		cout << "Wrong input. Enter number again..." << endl;
+		// next, request user reinput
+		std::cin >> n;
+	}
+	var = n;
+}
+void validInput(int &  var){
+	std::remove_reference<decltype(var)>::type n;
+	std::cin >> n;
+	while(std::cin.fail()){
+		// not a number
+		std::cin.clear(); // reset failbit
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //skip input too big
+		cout << "Wrong input. Enter number again..." << endl;
+		// next, request user reinput
+		std::cin >> n;
+	}
+	var = n;
+}
+
+/*
+int validInputInt(){
+	int n;
+	std::cin >> n;
+	while(std::cin.fail()){
 		// not a number
 		std::cin.clear(); // reset failbit
 		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //skip input too big
@@ -67,3 +100,7 @@ double validInput(){
 	}
 	return n;
 }
+*/
+
+
+
