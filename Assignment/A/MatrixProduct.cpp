@@ -10,7 +10,7 @@ using std::cout;
 using std::endl;
 using std::cin;
 
-int main (int argv, const char** args){
+int main (){
 
 	int s1 = 0;
 	int s2 = 0;
