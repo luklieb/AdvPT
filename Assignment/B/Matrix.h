@@ -9,7 +9,7 @@ class Vector;
 
 
 template<typename T>
-class Matrix:MatrixLike<T,Matrix<T>>{
+class Matrix : public MatrixLike<T,Matrix<T>>{
 	
 public:
 	Matrix();

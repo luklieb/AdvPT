@@ -37,7 +37,7 @@ void testFullMatrix (const int numGridPoints) {
 
 	std::cout << "Starting full matrix solver for " << numGridPoints << " grid points" << std::endl;
 
-	MatrixLike<double, Matrix<double>> A(numGridPoints, numGridPoints, 0.);
+	Matrix<double> A(numGridPoints, numGridPoints, 0.);
 	Vector<double> u(numGridPoints, 0.);
 	Vector<double> b(numGridPoints, 0.);
 
