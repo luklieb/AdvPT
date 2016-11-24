@@ -1,13 +1,14 @@
 #include <iostream>
-
+#include <cmath>
+#include "Timer.h"
 #include "Matrix.h"
 #include "Vector.h"
-#include "Stencil.h"
+//#include "Stencil.h"
 
 #define PI 3.141592653589793
 
 template<typename T>
-void solve (const Matrix<T>& A, const Vector<T>& b, Vector<T>& u) {
+void solve (const MatrixLike<T, Matrix<T>>& A, const Vector<T>& b, Vector<T>& u) {
 	const size_t numGridPoints = u.size( );
 
 	double initRes = (b - A * u).l2Norm( ); // determine the initial residual
@@ -27,7 +28,7 @@ void solve (const Matrix<T>& A, const Vector<T>& b, Vector<T>& u) {
 			std::cout << "Residual after iteration " << curIt << ":\t" << curRes << std::endl;
 	}
 
-	std::cout << "Residual after iteration " << curIt << ":\t" << curRes << std::endl << std::endl; // print the final number of iterations and the final residual
+	std::cout << "Residual after iteration " << curIt << ":\t" << curRes  << std::endl; // print the final number of iterations and the final residual
 }
 
 void testFullMatrix (const int numGridPoints) {
@@ -36,7 +37,7 @@ void testFullMatrix (const int numGridPoints) {
 
 	std::cout << "Starting full matrix solver for " << numGridPoints << " grid points" << std::endl;
 
-	Matrix<double> A(numGridPoints, numGridPoints, 0.);
+	MatrixLike<double, Matrix<double>> A(numGridPoints, numGridPoints, 0.);
 	Vector<double> u(numGridPoints, 0.);
 	Vector<double> b(numGridPoints, 0.);
 
@@ -54,9 +55,12 @@ void testFullMatrix (const int numGridPoints) {
 
 	std::cout << "Initialization complete\n";
 
-	// TODO: start timing
+	siwir::Timer time;
+	time.reset();
+	
 	solve(A, b, u);
-	// TODO: end timing and print elapsed time
+	
+	std::cout << "Time elapsed: " << time.elapsed() << std::endl << std::endl;	
 }
 
 void testStencil (const int numGridPoints) {
@@ -67,6 +71,9 @@ void testStencil (const int numGridPoints) {
 }
 
 int main(int argc, char** argv) {
-	testFullMatrix( 32 );
-	testStencil( 32 );
+	testFullMatrix(17);
+	testFullMatrix(33);
+	testFullMatrix(65);
+	testFullMatrix(129);
+//testStencil( 32 );
 }
