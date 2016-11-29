@@ -9,7 +9,7 @@ class Vector;
 
 
 template<typename T>
-class Matrix : public MatrixLike<T,Matrix<T>>{
+class Matrix : public MatrixLike< T, Matrix<T> > {
 	
 public:
 	Matrix();
@@ -24,14 +24,14 @@ public:
 	int getY() const {return sizeY_;}
 	int readFile();	
 	
-    Matrix inverseDiagonal() const;
+    	Matrix inverseDiagonal() const;
     
 	Matrix operator+ (const Matrix & o) const;
 	Matrix operator- (const Matrix & o) const;
 	Matrix operator* (const Matrix & o) const;
 	Vector<T> operator* (const Vector<T> & o) const;
-	T & operator() (int y, int x);
-	const T & operator() (int y, int x) const;
+	T & operator() (int & y,  int & x);
+	const T & operator() (int & y, int & x) const;
 	Matrix & operator= (const Matrix & rhs);
 	Matrix & operator+= (const Matrix & rhs);
 	Matrix & operator-= (const Matrix & rhs);

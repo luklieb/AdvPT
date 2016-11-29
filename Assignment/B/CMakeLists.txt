@@ -21,7 +21,7 @@
 # enable c++11 support
 set (CMAKE_CXX_STANDARD 11)
 
-set(CMAKE_CXX_FLAGS "-Wall -pedantic -O3")
+set(CMAKE_CXX_FLAGS "-Wall -pedantic -O3 -std=c++11")
 
 # add a single executable called "vector" consisting of a single source file vector.cpp
 add_executable(solver Solver.cpp)

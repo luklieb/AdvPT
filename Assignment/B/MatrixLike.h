@@ -15,8 +15,8 @@ public:
 	// feel free to extend as required
 
 	// TODO: optimize the () operator
-	virtual const T & operator() (int r, int c) const = 0;
-	virtual T & operator() (int r, int c) = 0;
+	virtual const T & operator() (int & r, int & c) const = 0;
+	virtual T & operator() (int & r, int & c) = 0;
 
 	/// other functions
 	virtual Derived inverseDiagonal( ) const = 0;
