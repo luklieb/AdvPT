@@ -12,12 +12,11 @@ public:
 	virtual ~MatrixLike ( ) noexcept = 0; // pure virtual destructor
 
 	/// virtual operators
-	virtual Matrix<T, rows, cols> operator* (const Matrix<T, rows, cols> & o) const = 0;
+	virtual Matrix<T, rows, 1> operator* (const Matrix<T, cols, 1> & o) const = 0;
 	// feel free to extend as required
 
-	// TODO: optimize the () operator
-	virtual const T & operator() (int r, int c) const = 0;
-	virtual T & operator() (int r, int c) = 0;
+	const T & operator() (int r, int c) const {return (static_cast<Derived*>(this))(r,c);}
+	T & operator() (int r, int c) {return (static_cast<Derived*>(this))(r,c);}
 
 	/// other functions
 	virtual Derived inverseDiagonal( ) const = 0;

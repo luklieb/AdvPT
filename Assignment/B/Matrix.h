@@ -3,6 +3,7 @@
 #include <cassert>
 #include <algorithm>
 #include <numeric>
+#include <functional>
 #include "MatrixLike.h"
 
 
@@ -16,31 +17,30 @@ public:
 	Matrix(int sizeY, int sizeX, T* data);
 	Matrix(int sizeY, int sizeX, T init);
 	Matrix(const Matrix & orig);
-    Matrix(int size, std::function<T(int i)> init); //Vector
-    Matrix(int size); //Vector
+	Matrix(int size, std::function<T(int i)> init); //Vector
+	Matrix(int size); //Vector
 	~Matrix(){delete[] data_;//std::cout << "Destruktor" << std::endl;
 	}
 
 	int getX() const {return sizeX_;}
 	int getY() const {return sizeY_;}
-    int size() const {return sizeY_;} //fuer Vectoren
+	int size() const {return sizeY_;} //fuer Vectoren
 	int readFile();	
 	
-    Matrix inverseDiagonal() const override;
-    T l2Norm() const;
+	Matrix inverseDiagonal() const override;
+	T l2Norm() const;
     
 	Matrix operator+ (const Matrix & o) const;
 	Matrix operator- (const Matrix & o) const;
     
-    template<size_t N>
-    Matrix<T,rows,N> operator* (const Matrix<T, cols, N> & o) const;
+	//template<size_t N>
+	Matrix<T,rows,1> operator* (const Matrix<T, cols, 1> & o) const;
     
-    Matrix operator* (const Matrix & o) const override;
     
-	T & operator() (int y, int  x) override;
-	const T & operator() (int y, int  x) const override;
-    T & operator() (int y);
-    const T operator() (int y) const;
+	T & operator() (int y, int  x);
+	const T & operator() (int y, int  x) const;
+	T & operator() (int y);
+	const T operator() (int y) const;
 
 	Matrix & operator= (const Matrix & rhs);
 	Matrix & operator+= (const Matrix & rhs);
@@ -175,14 +175,14 @@ Matrix<T, rows, cols> Matrix<T, rows, cols>::operator- (const Matrix<T, rows, co
 
 
 template<typename T, size_t rows, size_t cols>
-template<size_t N>
-Matrix<T, rows, N>  Matrix<T, rows, cols>::operator* (const Matrix<T, cols, N> & o) const{
+//template<size_t N>
+Matrix<T, rows, 1>  Matrix<T, rows, cols>::operator* (const Matrix<T, cols, 1> & o) const{
 	//assert( sizeX_ == o.sizeY_);
-    //static_assert(rows == cols, "mult\n");
+	//static_assert(rows == cols, "mult\n");
     
-    Matrix<T, rows, N> result (sizeY_, o.getX());
+	Matrix<T, rows, 1> result (sizeY_, o.getX());
 	
-    for(int y = 0; y < sizeY_; ++y){
+	for(int y = 0; y < sizeY_; ++y){
 		for(int x = 0; x < o.getX(); ++x){
 			for(int inner = 0; inner < sizeX_; ++inner){
 				result(y,x) += (*this)(y, inner) * o(inner, x);

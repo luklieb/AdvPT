@@ -45,14 +45,14 @@ void testFullMatrix (const int numGridPoints) {
 	Vector<double, numPoints> b(numPoints, 0.);
 
 	A(0, 0) = 1.;
-	for (int x = 1; x < numPoints - 1; ++x) {
+	for (size_t x = 1; x < numPoints - 1; ++x) {
 		A(x, x - 1) = 1. / hxSq;
 		A(x, x) = -2. / hxSq;
 		A(x, x + 1) = 1. / hxSq;
 	}
 	A(numPoints - 1, numPoints - 1) = 1.;
 
-	for (int x = 0; x < numPoints; ++x) {
+	for (size_t x = 0; x < numPoints; ++x) {
 		b(x) = sin(2. * PI * (x / (double)(numPoints - 1)));
 	}
 
