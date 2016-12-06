@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <numeric>
 
-template<typename T>
+template<typename T, size_t entries>
 class Vector{
 	
 public:
@@ -13,6 +13,7 @@ public:
 	Vector(int size, T* data);
 	Vector(int size, T init);
 	Vector(const Vector & orig);
+    Vector(int size, std::function<T(int i)> init);
 	~Vector(){delete[] data_;//std::cout << "Destruktor" << std::endl;
 	}
 
@@ -39,8 +40,8 @@ private:
 	
 };
 
-template<typename T>
-std::ostream & operator<< (std::ostream & os, const Vector<T> & m);
+template<typename T, size_t entries>
+std::ostream & operator<< (std::ostream & os, const Vector<T, entries> & m);
 
 
 
@@ -48,8 +49,8 @@ std::ostream & operator<< (std::ostream & os, const Vector<T> & m);
 
 
 //****************** IMPLEMENTATION ****************
-template<typename T>
-Vector<T>::Vector()
+template<typename T, size_t entries>
+Vector<T, entries>::Vector()
 	: size_(0),
 	data_(nullptr)
 	
@@ -57,8 +58,8 @@ Vector<T>::Vector()
 	//std::cout << "Constructor stand" << std::endl;
 }
 
-template<typename T>
-Vector<T>::Vector(int size)
+template<typename T, size_t entries>
+Vector<T, entries>::Vector(int size)
 	: size_(size),
 	data_(new T[size]())
 {
@@ -66,8 +67,8 @@ Vector<T>::Vector(int size)
 	//std::cout << "Constructor Y,X" << std::endl;
 }
 
-template<typename T>
-Vector<T>::Vector(int size, T* data)
+template<typename T, size_t entries>
+Vector<T, entries>::Vector(int size, T* data)
 	: size_(size),
 	data_(data)
 {
@@ -75,8 +76,8 @@ Vector<T>::Vector(int size, T* data)
 	//std::cout << "Constructor Y,X,*" << std::endl;
 }
 
-template<typename T>
-Vector<T>::Vector(int size, T init)
+template<typename T, size_t entries>
+Vector<T, entries>::Vector(int size, T init)
 	: size_(size)
 {	
 	assert( size > 0 );
@@ -85,8 +86,19 @@ Vector<T>::Vector(int size, T init)
 	//std::cout << "Constructor Y,X,init" << std::endl;
 }
 
-template<typename T>
-Vector<T>::Vector(const Vector & orig)
+template<typename T, size_t entries>
+Vector<T, entries>::Vector(int size, std::function<T(int i)> init)
+    : size_(size),
+    data_(new T[size]())
+{
+    assert (size > 0);
+    for(int i = 0; i < size; ++i){
+        data_[i] = init(i);
+    }
+}
+
+template<typename T, size_t entries>
+Vector<T, entries>::Vector(const Vector & orig)
 	: size_(orig.size_)
 {
 	data_ = new T[orig.size_];
@@ -94,30 +106,30 @@ Vector<T>::Vector(const Vector & orig)
 	//std::cout << "Constructor Vector" << std::endl;
 }
 
-template<typename T>
-T Vector<T>::l2Norm()const{
+template<typename T, size_t entries>
+T Vector<T, entries>::l2Norm()const{
     T init = 0.;
     return sqrt(std::accumulate(data_, data_+size_, init, [](T x, T y){ return x+y*y;}  ));
 }
 
-template<typename T>
-Vector<T> Vector<T>::operator+ (const Vector & o) const{
+template<typename T, size_t entries>
+Vector<T, entries> Vector<T, entries>::operator+ (const Vector & o) const{
 	assert( size_ == o.size_);
 	Vector result (size_);
 	std::transform(data_, data_+(size_), o.data_, result.data_, std::plus<T>() );
 	return result;
 }
 
-template<typename T>
-Vector<T> Vector<T>::operator- (const Vector & o) const{
+template<typename T, size_t entries>
+Vector<T, entries> Vector<T, entries>::operator- (const Vector & o) const{
 	assert( size_ == o.size_);
 	Vector result (size_);
 	std::transform(data_, data_+size_, o.data_, result.data_, std::minus<T>() );
 	return result;
 }
 
-template<typename T>
-T Vector<T>::operator* (const Vector & o) const{
+template<typename T, size_t entries>
+T Vector<T, entries>::operator* (const Vector & o) const{
 	assert( size_ == o.size_);
     T init = 0.0;
     Vector result (size_);
@@ -125,21 +137,21 @@ T Vector<T>::operator* (const Vector & o) const{
     return std::accumulate(result.data_, result.data_+result.size_, init);
 }
 
-template<typename T>
-T & Vector<T>::operator() (int x){
+template<typename T, size_t entries>
+T & Vector<T, entries>::operator() (int x){
 	assert( x >= 0);
     assert ( x < size_);
 	return data_[x];
 }
 
-template<typename T>
-T  Vector<T>::operator() (int x) const {
+template<typename T, size_t entries>
+T  Vector<T, entries>::operator() (int x) const {
 	assert( x >= 0 && x < size_);
 	return data_[x];
 }
 
-template<typename T>
-Vector<T> & Vector<T>::operator= (const Vector & rhs){
+template<typename T, size_t entries>
+Vector<T, entries> & Vector<T, entries>::operator= (const Vector & rhs){
 	//std::cout << "before rhs: " << std::endl << rhs << std::endl;
 	Vector tmp (rhs);
 	//std::cout << "after tmp: " << std::endl << tmp << std::endl;
@@ -148,26 +160,26 @@ Vector<T> & Vector<T>::operator= (const Vector & rhs){
 	return *this;
 }
 
-template<typename T>
-Vector<T> & Vector<T>::operator+= (const Vector & rhs){
+template<typename T, size_t entries>
+Vector<T, entries> & Vector<T, entries>::operator+= (const Vector & rhs){
 	assert( rhs.size_ == size_);
 	return (*this) = (*this) + rhs;
 }
 
-template<typename T>
-Vector<T> & Vector<T>::operator-= (const Vector & rhs){
+template<typename T, size_t entries>
+Vector<T, entries> & Vector<T, entries>::operator-= (const Vector & rhs){
 	assert( rhs.size_ == size_);
 	return (*this) = (*this) - rhs;
 }
 
-template<typename T>
-T & Vector<T>::operator*= (const Vector & rhs){
+template<typename T, size_t entries>
+T & Vector<T, entries>::operator*= (const Vector & rhs){
 	assert( size_ == rhs.size_);
 	return (*this) * rhs;
 }
 
-template<typename T>
-bool Vector<T>::operator== (const Vector & rhs) const{
+template<typename T, size_t entries>
+bool Vector<T, entries>::operator== (const Vector & rhs) const{
 	if(rhs.size_ != size_)
 		return false;
     
@@ -178,8 +190,8 @@ bool Vector<T>::operator== (const Vector & rhs) const{
 	return true;
 }
 
-template<typename T>
-bool Vector<T>::operator!= (const Vector & rhs) const{
+template<typename T, size_t entries>
+bool Vector<T, entries>::operator!= (const Vector & rhs) const{
 	return !((*this) == rhs);
 }
 
@@ -187,8 +199,8 @@ bool Vector<T>::operator!= (const Vector & rhs) const{
 
 //BEGIN NON-MEMBER FCTS
 
-template<typename T>
-std::ostream & operator<< (std::ostream & os, const Vector<T> & m){
+template<typename T, size_t entries>
+std::ostream & operator<< (std::ostream & os, const Vector<T, entries> & m){
 	for(int y = 0; y < m.getSize(); ++y){
 			os << m(y) << "\t";
 	}
