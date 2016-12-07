@@ -17,6 +17,8 @@ public:
 
 	const T & operator() (int r, int c) const {return (static_cast<Derived*>(this))(r,c);}
 	T & operator() (int r, int c) {return (static_cast<Derived*>(this))(r,c);}
+    
+
 
 	/// other functions
 	virtual Derived inverseDiagonal( ) const = 0;
@@ -28,3 +30,13 @@ protected:
 // MatrixLike d'tor implementation
 template<typename T, class Derived, size_t rows, size_t cols>
 inline MatrixLike<T, Derived, rows, cols>::~MatrixLike ( ) noexcept { }
+
+template<typename T, class Derived, size_t rows, size_t cols>
+inline std::ostream & operator<< (std::ostream & os, const MatrixLike<T, Matrix<T, rows, cols>, rows, cols> & m) noexcept {
+    for(int y = 0; y < (static_cast<Derived>(m)).getY(); ++y){
+        for(int x = 0; x < (static_cast<Derived>(m)).getX(); ++x){
+        os << (static_cast<Derived>(m))(y,x) << "\t";
+        }
+        os << std::endl;
+        }
+        return os;}

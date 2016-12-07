@@ -3,6 +3,7 @@
 #include "Timer.h"
 #include "Matrix.h"
 #include "Stencil.h"
+#include "MatrixLike.h"
 
 #define PI 3.141592653589793
 
@@ -12,7 +13,7 @@ using Vector = Matrix<T, rows, 1>;
 template<typename T, class Derived, size_t numPoints>
 void solve (const MatrixLike<T, Derived, numPoints, numPoints>& A, const Vector<T, numPoints>& b, Vector<T, numPoints>& u) {
 	const size_t numGridPoints = u.size( );
-
+    
 	double initRes = (b - A * u).l2Norm( ); // determine the initial residual
 	double curRes = initRes;
 	std::cout << "Initial residual:\t\t" << initRes << std::endl;
@@ -34,16 +35,17 @@ void solve (const MatrixLike<T, Derived, numPoints, numPoints>& A, const Vector<
 }
 
 template<size_t numPoints>
-void testFullMatrix (const int numGridPoints) {
+void testFullMatrix () {
 	const double hx = 1. / (numPoints - 1);
 	const double hxSq = hx * hx;
 
 	std::cout << "Starting full matrix solver for " << numPoints << " grid points" << std::endl;
 
-	Matrix<double, numPoints, numPoints> A(numPoints, numPoints, 0.);
-	Vector<double, numPoints> u(numPoints, 0.);
-	Vector<double, numPoints> b(numPoints, 0.);
+	Matrix<double, numPoints, numPoints> A;
+	Vector<double, numPoints> u;
+	Vector<double, numPoints> b;
 
+    
 	A(0, 0) = 1.;
 	for (size_t x = 1; x < numPoints - 1; ++x) {
 		A(x, x - 1) = 1. / hxSq;
@@ -51,7 +53,6 @@ void testFullMatrix (const int numGridPoints) {
 		A(x, x + 1) = 1. / hxSq;
 	}
 	A(numPoints - 1, numPoints - 1) = 1.;
-
 	for (size_t x = 0; x < numPoints; ++x) {
 		b(x) = sin(2. * PI * (x / (double)(numPoints - 1)));
 	}
@@ -67,14 +68,15 @@ void testFullMatrix (const int numGridPoints) {
 }
 
 template<size_t numPoints>
-void testStencil (const int numGridPoints) {
+void testStencil () {
 
-    std::cout << "Starting full stencil solver for " << numGridPoints << " grid points" << std::endl;
-    const double hx = 1. / (numGridPoints - 1);
+    int numGridPoints = numPoints;
+    std::cout << "Starting full stencil solver for " << numPoints << " grid points" << std::endl;
+    const double hx = 1. / (numPoints - 1);
     const double hxSq = hx * hx;
     
-    Vector<double, numPoints> u(numGridPoints, 0.);
-    Vector<double, numPoints> b(numGridPoints, [&numGridPoints](int x) ->double {return sin(2. * PI * (x / (double)(numGridPoints - 1)));});
+    Vector<double, numPoints> u(0.);
+    Vector<double, numPoints> b([&numGridPoints](int x) ->double {return sin(2. * PI * (x / (double)(numPoints - 1)));});
     Stencil<double, numPoints, numPoints> Asten({ { 0, 1. } }, { { -1, 1. / hxSq },{ 0, -2. / hxSq },{ 1, 1. / hxSq } });
 
     std::cout << "Initialization Stencil complete\n";
@@ -89,18 +91,15 @@ void testStencil (const int numGridPoints) {
 }
 
 int main(int argc, char** argv) {
-    const int a = 17;
+    const int a = 129;
+ 
+	testFullMatrix<a>();
     
-	testFullMatrix<a>(a);
-    /*
-	testFullMatrix<b>(b);
-	testFullMatrix<c>(c);
-	testFullMatrix<d>(d);
+    Matrix<double, 3, 4> matrixA;
+    Matrix<double, 4, 2> matrixB;
+    Matrix<double, 3 , 2> matrixC;
 
-    testStencil<a>(a);
-    testStencil<b>(b);
-    testStencil<c>(c);
-    testStencil<d>(d);
-     */
+    testStencil<a>();
+    
     
 }

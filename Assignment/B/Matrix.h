@@ -1,9 +1,11 @@
 #pragma once
+
 #include <iostream>
 #include <cassert>
 #include <algorithm>
 #include <numeric>
 #include <functional>
+#include <array>
 #include "MatrixLike.h"
 
 
@@ -13,14 +15,11 @@ class Matrix : public MatrixLike<T, Matrix<T, rows, cols>, rows, cols> {
 	
 public:
 	Matrix();
-	Matrix(int sizeY, int sizeX);
-	Matrix(int sizeY, int sizeX, T* data);
-	Matrix(int sizeY, int sizeX, T init);
+	Matrix(T init);
 	Matrix(const Matrix & orig);
-	Matrix(int size, std::function<T(int i)> init); //Vector
-	Matrix(int size); //Vector
-	~Matrix(){delete[] data_;//std::cout << "Destruktor" << std::endl;
-	}
+	Matrix(std::function<T(int i)> init); //nur fuer Vector
+    //~Matrix();//std::cout << "Destruktor" << std::endl;
+	
 
 	int getX() const {return sizeX_;}
 	int getY() const {return sizeY_;}
@@ -34,7 +33,7 @@ public:
 	Matrix operator- (const Matrix & o) const;
     
 	//template<size_t N>
-	Matrix<T,rows,1> operator* (const Matrix<T, cols, 1> & o) const;
+	Matrix<T,rows,1> operator* (const Matrix<T, cols, 1> & o) const override;
     
     
 	T & operator() (int y, int  x);
@@ -45,14 +44,15 @@ public:
 	Matrix & operator= (const Matrix & rhs);
 	Matrix & operator+= (const Matrix & rhs);
 	Matrix & operator-= (const Matrix & rhs);
-	Matrix & operator*= (const Matrix & rhs);
+    template<size_t N>
+	Matrix<T, rows, N> & operator*= (const Matrix<T, cols, N> & rhs);
 	bool operator== (const Matrix & rhs) const;
 	bool operator!= (const Matrix & rhs) const;
 
 private:	
 	int sizeX_;
 	int sizeY_;
-	T * data_;
+    std::array<T, rows*cols> data_;
 	
 };
 template<typename T, size_t rows, size_t cols>
@@ -67,84 +67,58 @@ std::ostream & operator<< (std::ostream & os, const Matrix<T, rows, cols> & m);
 //****************** IMPLEMENTATION ****************
 template<typename T, size_t rows, size_t cols>
 Matrix<T, rows, cols>::Matrix()
-	: sizeX_(0),
-	sizeY_(0),
-	data_(nullptr)
+	: sizeX_(cols),
+	sizeY_(rows),
+    data_(std::array<T, rows*cols>())
 	
 {
-	//std::cout << "Constructor stand" << std::endl;
+    static_assert(rows > 0 && cols > 0, "Groesse = 0\n");
+    //std::cout << "Constructor stand" << std::endl;
 }
 
-template<typename T, size_t rows, size_t cols>
-Matrix<T, rows, cols>::Matrix(int sizeY, int sizeX)
-	: sizeX_(sizeX),
-	sizeY_(sizeY),
-	data_(new T[sizeX*sizeY]())
-{
-	assert( sizeX > 0 );
-	assert( sizeY > 0 );
-	//std::cout << "Constructor Y,X" << std::endl;
-}
 
 template<typename T, size_t rows, size_t cols>
-Matrix<T, rows, cols>::Matrix(int sizeY, int sizeX, T* data)
-	: sizeX_(sizeX), 
-	sizeY_(sizeY), 
-	data_(data)
-{
-	assert( sizeX > 0);
-	assert (sizeY > 0);
-	//std::cout << "Constructor Y,X,*" << std::endl;
-}
-
-template<typename T, size_t rows, size_t cols>
-Matrix<T, rows, cols>::Matrix(int sizeY, int sizeX, T init)
-	: sizeX_(sizeX), 
-	sizeY_(sizeY)
+Matrix<T, rows, cols>::Matrix(T init)
+	: sizeX_(cols),
+	sizeY_(rows),
+    data_(std::array<T, rows*cols>())
 {	
-	assert( sizeX > 0 );
-	assert( sizeY > 0 );
-	data_ = new T[sizeX*sizeY];
-	std::fill(data_, data_+(sizeX_*sizeY_), init);
+    static_assert(rows > 0 && cols > 0, "Groesse = 0\n");
+    std::fill(data_.begin(), data_.end(), init);
 	//std::cout << "Constructor Y,X,init" << std::endl;
 }
 
 template<typename T, size_t rows, size_t cols>
 Matrix<T, rows, cols>::Matrix(const Matrix<T, rows, cols> & orig)
 	: sizeX_(orig.sizeX_),
-	sizeY_(orig.sizeY_)
+	sizeY_(orig.sizeY_),
+    data_(std::array<T, rows*cols>())
 {
-	data_ = new T[orig.sizeY_*orig.sizeX_];
-	std::copy(orig.data_, orig.data_+(sizeX_*sizeY_), data_);
+    static_assert(rows > 0 && cols > 0, "Groesse = 0\n");
+	std::copy(orig.data_.begin(), orig.data_.end(), data_.begin());
 	//std::cout << "Constructor Matrix" << std::endl;
 }
 
 
 template<typename T, size_t rows, size_t cols>
-Matrix<T, rows, cols>::Matrix(int size, std::function<T(int i)> init)
-: sizeX_(1),
-sizeY_(size)
+Matrix<T, rows, cols>::Matrix(std::function<T(int i)> init)
+    : sizeX_(1),
+    sizeY_(rows),
+    data_(std::array<T, rows*cols>())
 {
-    data_ = new T[sizeY_]();
+    static_assert(rows > 0 && cols > 0, "Groesse = 0\n");
+    static_assert(cols == 1, "Kein Vector\n");
     for(int x = 0; x < sizeY_; ++x){
         data_[x] = init(x);
     }
 }
 
-template<typename T, size_t rows, size_t cols>
-Matrix<T, rows, cols>::Matrix(int size)
-: sizeX_(1),
-sizeY_(size)
-{
-    data_ = new T[sizeY_]();
-
-}
 
 
 template<typename T, size_t rows, size_t cols>
 Matrix<T, rows, cols> Matrix<T, rows, cols>::inverseDiagonal()const{
-    assert (sizeY_ == sizeX_);
-    Matrix result(sizeY_, sizeX_);
+    assert (rows == cols);
+    Matrix <T, rows, cols> result;
     T temp;
     for(int i = 0; i<sizeY_; ++i){
         temp = (*this)(i,i);
@@ -157,19 +131,18 @@ Matrix<T, rows, cols> Matrix<T, rows, cols>::inverseDiagonal()const{
 
 template<typename T, size_t rows, size_t cols>
 Matrix<T, rows, cols> Matrix<T, rows, cols>::operator+ (const Matrix<T, rows, cols> & o) const{
-	assert( sizeX_ == o.sizeX_);
-	assert( sizeY_ == o.sizeY_);
-	Matrix result (sizeY_, sizeX_);
-	std::transform(data_, data_+(sizeX_*sizeY_), o.data_, result.data_, std::plus<T>() );
+    //std::cout << "Add" << std::endl;
+
+	Matrix <T, rows, cols> result;
+	std::transform(data_.begin(), data_.end(), o.data_.begin(), result.data_.begin(), std::plus<T>() );
 	return result;
 }
 
 template<typename T, size_t rows, size_t cols>
 Matrix<T, rows, cols> Matrix<T, rows, cols>::operator- (const Matrix<T, rows, cols> & o) const{
-	assert( sizeX_ == o.sizeX_);
-	assert( sizeY_ == o.sizeY_);
-	Matrix result (sizeY_, sizeX_);
-	std::transform(data_, data_+(sizeX_*sizeY_), o.data_, result.data_, std::minus<T>() );
+    //std::cout << "Minus" << std::endl;
+	Matrix <T, rows, cols> result;
+	std::transform(data_.begin(), data_.end(), o.data_.begin(), result.data_.begin(), std::minus<T>() );
 	return result;
 }
 
@@ -177,10 +150,8 @@ Matrix<T, rows, cols> Matrix<T, rows, cols>::operator- (const Matrix<T, rows, co
 template<typename T, size_t rows, size_t cols>
 //template<size_t N>
 Matrix<T, rows, 1>  Matrix<T, rows, cols>::operator* (const Matrix<T, cols, 1> & o) const{
-	//assert( sizeX_ == o.sizeY_);
-	//static_assert(rows == cols, "mult\n");
-    
-	Matrix<T, rows, 1> result (sizeY_, o.getX());
+
+	Matrix<T, rows, 1> result (0.);
 	
 	for(int y = 0; y < sizeY_; ++y){
 		for(int x = 0; x < o.getX(); ++x){
@@ -193,32 +164,14 @@ Matrix<T, rows, 1>  Matrix<T, rows, cols>::operator* (const Matrix<T, cols, 1> &
 	return result;
 }
 
-/*
-template<typename T, size_t rows, size_t cols>
-Matrix<T, rows, 1>  Matrix<T, rows, cols>::operator* (const Matrix<T, rows, 1> & o) const{
-    assert( sizeX_ == o.sizeY_);
-    Matrix result (sizeY_, o.sizeX_);
-    for(int y = 0; y < sizeY_; ++y){
-        for(int x = 0; x < o.sizeX_; ++x){
-            for(int inner = 0; inner < sizeX_; ++inner){
-                result(y,x) += (*this)(y, inner) * o(inner, x);
-            }
-        } 
-        
-    }
-    return result;
-}
-
-*/
-
 
 
 template<typename T, size_t rows, size_t cols>
 T Matrix<T, rows, cols>::l2Norm() const{
-    static_assert( cols == 1, "l2Norm kein Vektor\n" );
-    assert(rows == sizeY_);
+    //std::cout << "L2 Norm" << std::endl;
+    static_assert(cols == 1, "l2Norm kein Vector \n");
     T init = 0.;
-    return sqrt(std::accumulate(data_, data_+sizeY_, init, [](T x, T y){ return x+y*y;}  ));
+    return sqrt(std::accumulate(data_.begin(), data_.end(), init, [](T x, T y){ return x+y*y;}  ));
     
 }
 
@@ -226,16 +179,16 @@ T Matrix<T, rows, cols>::l2Norm() const{
 
 template<typename T, size_t rows, size_t cols>
 T & Matrix<T, rows, cols>::operator() (int y){
-    static_assert( cols == 1, "Vector () Operator 1\n");
-    assert( rows < y);
+    static_assert(cols == 1, "(int) kein Vector\n");
+    assert( y >= 0 && y < rows);
     return data_[y];
 }
 
 
 template<typename T, size_t rows, size_t cols>
 const T Matrix<T, rows, cols>::operator() (int y) const{
-    static_assert( cols == 1, "Vector () Operator 2\n");
-    assert( rows < y);
+    static_assert(cols == 1, "(int) kein Vector\n");
+    assert(y >= 0 && y < rows) ;
     return data_[y];
 }
 
@@ -258,7 +211,7 @@ const T &  Matrix<T, rows, cols>::operator() (int y, int x) const {
 template<typename T, size_t rows, size_t cols>
 Matrix<T, rows, cols> & Matrix<T, rows, cols>::operator= (const Matrix<T, rows, cols> & rhs){
 	//std::cout << "before rhs: " << std::endl << rhs << std::endl;
-	Matrix tmp (rhs);
+	Matrix <T, rows, cols> tmp (rhs);
 	//std::cout << "after tmp: " << std::endl << tmp << std::endl;
 	std::swap(sizeX_, tmp.sizeX_);
 	std::swap(sizeY_, tmp.sizeY_);
@@ -268,20 +221,18 @@ Matrix<T, rows, cols> & Matrix<T, rows, cols>::operator= (const Matrix<T, rows, 
 
 template<typename T, size_t rows, size_t cols>
 Matrix<T, rows, cols> & Matrix<T, rows, cols>::operator+= (const Matrix<T, rows, cols> & rhs){
-	assert( rhs.sizeX_ == sizeX_);
-	assert (rhs.sizeY_ == sizeY_);
+
 	return (*this) = (*this) + rhs;
 }
 
 template<typename T, size_t rows, size_t cols>
 Matrix<T, rows, cols> & Matrix<T, rows, cols>::operator-= (const Matrix<T, rows, cols> & rhs){
-	assert( rhs.sizeX_ == sizeX_);
-	assert( rhs.sizeY_ == sizeY_);
 	return (*this) = (*this) - rhs;
 }
 
 template<typename T, size_t rows, size_t cols>
-Matrix<T, rows, cols> & Matrix<T, rows, cols>::operator*= (const Matrix<T, rows, cols> & rhs){
+template<size_t N>
+Matrix<T, rows, N> & Matrix<T, rows, cols>::operator*= (const Matrix<T, cols, N> & rhs){
 	assert( sizeX_ == rhs.sizeY_);
 	//Matrix result (o.sizeX_, sizeY_);
 	return (*this) = (*this) * rhs;

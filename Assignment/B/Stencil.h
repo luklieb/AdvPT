@@ -29,9 +29,10 @@ public:
 	// HINT: stencil entries are stored as offset/coefficient pair, that is the offset specifies which element of a
 	// vector, relative to the current index, is to be regarded. It is then multiplied with the according coefficient.
 	// All of these expressions are evaluated and then summed up to get the final result.
-	Matrix<T, rows, cols> operator* (const Matrix<T, rows, cols> & o) const override;
-    const T & operator() (int r, int c) const override;
-    T & operator() (int r, int c) override;
+	Matrix<T, rows, 1> operator* (const Matrix<T, rows, 1> & o) const override;
+    
+    //const T & operator() (int r, int c) const ;
+    //T & operator() (int r, int c) ;
 
 	Stencil<T, rows, cols> inverseDiagonal( ) const override;
 
@@ -77,11 +78,10 @@ Stencil<T, rows, cols> & Stencil<T, rows, cols>::operator= (Stencil<T, rows, col
 }
 
 template<typename T, size_t rows, size_t cols>
-Matrix<T, rows, cols>  Stencil<T, rows, cols>::operator* (const Matrix<T, rows, cols> & o) const{
-    static_assert(cols == 1, "Stencil operator* kein Vector \n");
+Matrix<T, rows, 1>  Stencil<T, rows, cols>::operator* (const Matrix<T, rows, 1> & o) const{
     T sum = 0.0;
     T sum2 = 0.0;
-    Matrix<T, rows, 1> temp (o.size());
+    Matrix<T, rows, 1> temp (0.);
     
     //Boundary
     std::for_each(boundaryStencil_.begin(), boundaryStencil_.end(), [&o,&sum,&sum2](const StencilEntry<T>& entry){
@@ -111,6 +111,7 @@ Stencil<T, rows, cols>  Stencil<T, rows, cols>::inverseDiagonal () const{
     return temp;
 }
 
+/*
 template<typename T, size_t rows, size_t cols>
 const T & Stencil<T, rows, cols>::operator() (int r, int c) const {
     return innerStencil_[0].second;
@@ -121,5 +122,5 @@ T & Stencil<T, rows, cols>::operator() (int r, int c) {
     return innerStencil_[0].second;
 }
 
-
+*/
 
