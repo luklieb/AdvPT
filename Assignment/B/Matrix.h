@@ -35,7 +35,7 @@ public:
 	//template<size_t N>
 	Matrix<T,rows,1> operator* (const Matrix<T, cols, 1> & o) const override;
     	template<size_t N>
-	Matrix<T,rows,N> operator* (const Matrix<T, cols, N> & o) const override;
+	Matrix<T,rows,N> operator* (const Matrix<T, cols, N> & o) const;
  
     
 	T & operator() (int y, int  x);

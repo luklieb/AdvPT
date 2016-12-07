@@ -26,9 +26,7 @@ public:
 	Stencil& operator=(const Stencil & o);
 	Stencil& operator=(Stencil && o) noexcept;
 
-	// HINT: stencil entries are stored as offset/coefficient pair, that is the offset specifies which element of a
-	// vector, relative to the current index, is to be regarded. It is then multiplied with the according coefficient.
-	// All of these expressions are evaluated and then summed up to get the final result.
+
 	Matrix<T, rows, 1> operator* (const Matrix<T, rows, 1> & o) const override;
     
     //const T & operator() (int r, int c) const ;
@@ -37,9 +35,6 @@ public:
 	Stencil<T, rows, cols> inverseDiagonal( ) const override;
 
 protected:
-	// containers for the stencil entries -> boundary stencils represent the first and last rows of a corresponding
-	// matrix and are to be applied to the first and last element of a target vector; inner stencils correspond to
-	// the remaining rows of the matrix
 	std::vector<StencilEntry<T> > boundaryStencil_;	// feel free to change the datatype if convenient
 	std::vector<StencilEntry<T> > innerStencil_;	// feel free to change the datatype if convenient
 };

@@ -99,8 +99,17 @@ int main(int argc, char** argv) {
 	Matrix<double, 3, 4> matrixA(1.5);
 	Matrix<double, 4, 2> matrixB(2.0);
 	Matrix<double, 3 , 2> matrixC;
+	matrixB(1,1) = 3.0;
 	matrixC = matrixA*matrixB;
 	std::cout << matrixA << std::endl << matrixB << std::endl << matrixC;
+	
+	Matrix<double, 4, 4> matrixD(1.5);
+	Matrix<double, 4, 4> matrixE(2.0);
+	Matrix<double, 4 , 4> matrixF;
+	matrixE(1,1) = 3.0;
+	matrixF = matrixD*matrixE;
+	std::cout << matrixD << std::endl << matrixE << std::endl << matrixF;
+
 
 
 }
