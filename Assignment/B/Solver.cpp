@@ -12,8 +12,8 @@ using Vector = Matrix<T, rows, 1>;
 
 template<typename T, class Derived, size_t numPoints>
 void solve (const MatrixLike<T, Derived, numPoints, numPoints>& A, const Vector<T, numPoints>& b, Vector<T, numPoints>& u) {
-	const size_t numGridPoints = u.size( );
-    
+	//const size_t numGridPoints = u.size( );
+
 	double initRes = (b - A * u).l2Norm( ); // determine the initial residual
 	double curRes = initRes;
 	std::cout << "Initial residual:\t\t" << initRes << std::endl;
@@ -45,7 +45,7 @@ void testFullMatrix () {
 	Vector<double, numPoints> u;
 	Vector<double, numPoints> b;
 
-    
+
 	A(0, 0) = 1.;
 	for (size_t x = 1; x < numPoints - 1; ++x) {
 		A(x, x - 1) = 1. / hxSq;
@@ -61,45 +61,46 @@ void testFullMatrix () {
 
 	siwir::Timer time;
 	time.reset();
-	
+
 	solve(A, b, u);
-	
+
 	std::cout << "Time elapsed Matrix: " << time.elapsed() << std::endl << std::endl;
 }
 
 template<size_t numPoints>
 void testStencil () {
 
-    int numGridPoints = numPoints;
-    std::cout << "Starting full stencil solver for " << numPoints << " grid points" << std::endl;
-    const double hx = 1. / (numPoints - 1);
-    const double hxSq = hx * hx;
-    
-    Vector<double, numPoints> u(0.);
-    Vector<double, numPoints> b([&numGridPoints](int x) ->double {return sin(2. * PI * (x / (double)(numPoints - 1)));});
-    Stencil<double, numPoints, numPoints> Asten({ { 0, 1. } }, { { -1, 1. / hxSq },{ 0, -2. / hxSq },{ 1, 1. / hxSq } });
+	int numGridPoints = numPoints;
+	std::cout << "Starting full stencil solver for " << numPoints << " grid points" << std::endl;
+	const double hx = 1. / (numPoints - 1);
+	const double hxSq = hx * hx;
 
-    std::cout << "Initialization Stencil complete\n";
-    
-    siwir::Timer time;
-    time.reset();
-    
-    solve(Asten, b, u);
-    
-    std::cout << "Time elapsed Stencil: " << time.elapsed() << std::endl << std::endl;
-    
+	Vector<double, numPoints> u(0.);
+	Vector<double, numPoints> b([&numGridPoints](int x) ->double {return sin(2. * PI * (x / (double)(numPoints - 1)));});
+	Stencil<double, numPoints, numPoints> Asten({ { 0, 1. } }, { { -1, 1. / hxSq },{ 0, -2. / hxSq },{ 1, 1. / hxSq } });
+
+	std::cout << "Initialization Stencil complete\n";
+
+	siwir::Timer time;
+	time.reset();
+
+	solve(Asten, b, u);
+
+	std::cout << "Time elapsed Stencil: " << time.elapsed() << std::endl << std::endl;
+
 }
 
 int main(int argc, char** argv) {
-    const int a = 129;
- 
-	testFullMatrix<a>();
-    
-    Matrix<double, 3, 4> matrixA;
-    Matrix<double, 4, 2> matrixB;
-    Matrix<double, 3 , 2> matrixC;
+	const int a = 129;
 
-    testStencil<a>();
-    
-    
+	testFullMatrix<a>();
+	testStencil<a>();
+
+	Matrix<double, 3, 4> matrixA(1.5);
+	Matrix<double, 4, 2> matrixB(2.0);
+	Matrix<double, 3 , 2> matrixC;
+	matrixC = matrixA*matrixB;
+	std::cout << matrixA << std::endl << matrixB << std::endl << matrixC;
+
+
 }

@@ -34,7 +34,9 @@ public:
     
 	//template<size_t N>
 	Matrix<T,rows,1> operator* (const Matrix<T, cols, 1> & o) const override;
-    
+    	template<size_t N>
+	Matrix<T,rows,N> operator* (const Matrix<T, cols, N> & o) const override;
+ 
     
 	T & operator() (int y, int  x);
 	const T & operator() (int y, int  x) const;
@@ -164,7 +166,22 @@ Matrix<T, rows, 1>  Matrix<T, rows, cols>::operator* (const Matrix<T, cols, 1> &
 	return result;
 }
 
+template<typename T, size_t rows, size_t cols>
+template<size_t N>
+Matrix<T, rows, N>  Matrix<T, rows, cols>::operator* (const Matrix<T, cols, N> & o) const{
 
+	Matrix<T, rows, N> result (0.);
+	
+	for(int y = 0; y < sizeY_; ++y){
+		for(int x = 0; x < o.getX(); ++x){
+			for(int inner = 0; inner < sizeX_; ++inner){
+				result(y,x) += (*this)(y, inner) * o(inner, x);
+			}
+		} 
+
+	}
+	return result;
+}
 
 template<typename T, size_t rows, size_t cols>
 T Matrix<T, rows, cols>::l2Norm() const{
@@ -180,7 +197,7 @@ T Matrix<T, rows, cols>::l2Norm() const{
 template<typename T, size_t rows, size_t cols>
 T & Matrix<T, rows, cols>::operator() (int y){
     static_assert(cols == 1, "(int) kein Vector\n");
-    assert( y >= 0 && y < rows);
+    assert( y >= 0 && (unsigned int) y < rows);
     return data_[y];
 }
 
@@ -188,7 +205,7 @@ T & Matrix<T, rows, cols>::operator() (int y){
 template<typename T, size_t rows, size_t cols>
 const T Matrix<T, rows, cols>::operator() (int y) const{
     static_assert(cols == 1, "(int) kein Vector\n");
-    assert(y >= 0 && y < rows) ;
+    assert(y >= 0 && (unsigned int)y < rows) ;
     return data_[y];
 }
 
