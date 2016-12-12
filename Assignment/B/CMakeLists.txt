@@ -1,30 +1,11 @@
-# How to use CMake on Linux with GNU Makefile backend:
-#   - Use a separate build folder for intermediate files
-#       mkdir build && cd build
-#       cmake ..
-#       make
-#   - you can configure the project for Debug or Release mode by running a cmake GUI in the build folder:
-#       cd build
-#     then either
-#       ccmake . 
-#     or 
-#       cmake-gui .
-#
-# There are more generators available, for example for Eclipse, Visual Studio, Ninja, ....
-# You can list all available generators with "cmake -G"
-#
+cmake_minimum_required(VERSION 2.8)
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -pedantic -O3")
 
-# add this line to prevent CMake warning: it specifies the minimum cmake version which is required 
-# to build this project
-#cmake_minimum_required(VERSION 3.1)  
+add_executable( SolverTest SolverTest.cpp)
+add_executable( SolverAddressSanitizer SolverShort.cpp)
+add_executable( SolverValgrind SolverShort.cpp)
 
-# enable c++11 support
-set (CMAKE_CXX_STANDARD 11)
+SET_TARGET_PROPERTIES(SolverTest PROPERTIES COMPILE_FLAGS "-DNDEBUG")
 
-set(CMAKE_CXX_FLAGS "-Wall -pedantic -O3 -std=c++11")
-
-# add a single executable called "vector" consisting of a single source file vector.cpp
-add_executable(solver Solver.cpp)
-
-
-
+SET_TARGET_PROPERTIES(SolverAddressSanitizer PROPERTIES COMPILE_FLAGS "-fsanitize=address -fno-omit-frame-pointer")
+SET_TARGET_PROPERTIES(SolverAddressSanitizer PROPERTIES LINK_FLAGS "-fsanitize=address")
