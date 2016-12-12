@@ -63,6 +63,9 @@ std::ostream & operator<< (std::ostream & os, const Matrix<T, rows, cols> & m);
 
 
 
+template<typename T, size_t rows>
+using Vector = Matrix<T, rows, 1>;
+
 
 
 

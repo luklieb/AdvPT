@@ -7,9 +7,6 @@
 
 #define PI 3.141592653589793
 
-template<typename T, size_t rows>
-using Vector = Matrix<T, rows, 1>;
-
 template<typename T, class Derived, size_t numPoints>
 void solve (const MatrixLike<T, Derived, numPoints, numPoints>& A, const Vector<T, numPoints>& b, Vector<T, numPoints>& u) {
 	//const size_t numGridPoints = u.size( );
